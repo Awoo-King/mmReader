@@ -5,22 +5,23 @@ import Testing
 @testable import mmReaderCore
 
 @MainActor
-@Test func toolbarOpenPathReplacesDisplayedText() throws {
+@Test func toolbarOpenPathResetsToFirstPageOfNewFile() throws {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
     try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     let first = root.appendingPathComponent("first.txt")
     let second = root.appendingPathComponent("second.txt")
-    try "FIRST FILE".write(to: first, atomically: true, encoding: .utf8)
-    try "SECOND FILE".write(to: second, atomically: true, encoding: .utf8)
+    try (0..<100).map { "Z\($0)" }.joined(separator: "\n").write(to: first, atomically: true, encoding: .utf8)
+    try "SECOND FILE START\nline2\nline3".write(to: second, atomically: true, encoding: .utf8)
 
     let wc = ReaderWindowController(configStore: ConfigStore(baseURL: root))
     _ = wc.handleDroppedFile(first)
-    #expect(wc.displayedTextForTesting.contains("FIRST FILE"))
+    _ = wc.moveToNextPage()
+    #expect(wc.displayedTextForTesting.contains("Z"))
 
     wc.debugOpenDocumentFileForTesting(second)
 
-    #expect(wc.displayedTextForTesting.contains("SECOND FILE"))
-    #expect(wc.displayedTextForTesting.contains("FIRST FILE") == false)
+    #expect(wc.displayedTextForTesting.contains("SECOND FILE START"))
+    #expect(wc.displayedTextForTesting.contains("Z") == false)
 }
 
 @MainActor

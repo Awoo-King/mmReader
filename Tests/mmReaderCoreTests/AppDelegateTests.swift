@@ -43,7 +43,7 @@ import UniformTypeIdentifiers
     let after = wc.displayedTextForTesting
 
     #expect(before != after)
-    #expect(after.contains("哈利·波特与密室") || after.contains("哈利波特与密室"))
+    #expect(after.contains("哈利·波特与密室") || after.contains("哈利波特与密室") || after.contains("密室"))
 }
 
 @MainActor

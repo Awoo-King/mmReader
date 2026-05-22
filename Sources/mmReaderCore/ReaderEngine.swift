@@ -95,6 +95,25 @@ public struct ReaderEngine {
         currentAnchor = clamped
     }
 
+    public mutating func goToFirstMeaningfulPage() {
+        guard pages.isEmpty == false else {
+            currentPageIndex = 0
+            currentAnchor = 0
+            return
+        }
+
+        for (index, page) in pages.enumerated() {
+            if page.contains(where: { !$0.isWhitespace && !$0.isNewline }) {
+                currentPageIndex = index
+                currentAnchor = anchorForPageIndex(index)
+                return
+            }
+        }
+
+        currentPageIndex = 0
+        currentAnchor = anchorForPageIndex(0)
+    }
+
     private mutating func recalculatePages(keepingAnchor anchor: Int?) {
         let nsText = normalizedText as NSString
         pages = []

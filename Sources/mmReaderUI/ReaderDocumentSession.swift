@@ -61,6 +61,7 @@ public struct ReaderDocumentSession {
                 fontSize: config.fontSize
             )
             try engine.openFileAtomically(url)
+            engine.goToFirstMeaningfulPage()
             currentDocumentPath = url.path
             syncDerivedStateFromEngine()
             persistCurrentPosition()
